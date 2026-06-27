@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Alumni Management System</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  
+<nav class="navbar">
+    <div class="logo">Alumni Portal</div>
+
+    <ul class="nav-links">
+        <li><a href="student-dashboard.html">Student</a></li>
+        <li><a href="alumni-dashboard.html">Alumni</a></li>
+        <li><a href="event.html">Events</a></li>
+        <li><a href="announcement.html">Announcements</a></li>
+        <li><a href="request.html">Mentor Requests</a></li>
+    </ul>
+</nav>
+<header>
+    <h1>🎓 Alumni Management System</h1>
+    <p>Login to continue</p>
+</header>
+
+<div class="hero">
+
+<h2>User Login</h2>
+
+<select id="role">
+    <option value="student">Student</option>
+    <option value="alumni">Alumni</option>
+    <option value="admin">Admin</option>
+</select>
+
+<br><br>
+
+<input type="email"
+id="email"
+placeholder="Enter Email">
+
+<br><br>
+
+<input type="password"
+id="password"
+placeholder="Enter Password">
+
+<br><br>
+
+<button class="btn" onclick="login()">
+Login
+</button>
+
+</div>
+
+<script>
+
+function login(){
+
+let role=document.getElementById("role").value;
+let email=document.getElementById("email").value;
+let password=document.getElementById("password").value;
+
+if(role=="admin" &&
+email=="admin@gmail.com" &&
+password=="admin123"){
+
+localStorage.setItem("admin","true");
+
+alert("Admin Login Successful");
+
+window.location.href="admin.html";
+
+}
+
+else if(role=="student"){
+
+alert("Student Login Successful");
+
+window.location.href="index.html";
+
+}
+
+else if(role=="alumni"){
+
+alert("Alumni Login Successful");
+
+window.location.href="alumni.html";
+
+}
+
+else{
+
+alert("Invalid Login");
+
+}
+
+}
+
+</script>
+
+<footer>
+
+<p>© 2026 Alumni Management System</p>
+
+</footer>
+
+</body>
+</html>

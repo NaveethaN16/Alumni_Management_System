@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">Alumni Portal</div>
+
+    <ul class="nav-links">
+        <li><a href="student-dashboard.html">Student</a></li>
+        <li><a href="alumni-dashboard.html">Alumni</a></li>
+        <li><a href="event.html">Events</a></li>
+        <li><a href="announcement.html">Announcements</a></li>
+        <li><a href="request.html">Mentor Requests</a></li>
+    </ul>
+</nav>
+
+<!-- HEADER -->
+<header>
+    <h1>Events Dashboard</h1>
+
+    <nav>
+        <ul class="menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="admin-dashboard.html">Admin</a></li>
+            <li><a href="student-dashboard.html">Student</a></li>
+            <li><a href="alumni-dashboard.html">Alumni</a></li>
+            <li><a href="event.html" class="active">Events</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- ADD EVENT FORM -->
+<section class="form-section">
+    <h2>Add New Event</h2>
+
+    <form id="eventForm">
+        <input type="text" id="eventName" placeholder="Event Name" required>
+        <input type="date" id="eventDate" required>
+        <input type="text" id="eventLocation" placeholder="Location" required>
+        <button type="submit">Add Event</button>
+    </form>
+</section>
+
+<!-- EVENT LIST -->
+<section class="events-section">
+    <h2>Upcoming Events</h2>
+    <div id="eventsList" class="cards"></div>
+</section>
+
+<!-- JAVASCRIPT -->
+<script>
+let events = JSON.parse(localStorage.getItem("events")) || [];
+
+// Load events on page load
+window.onload = function () {
+    events.forEach(addEventToUI);
+};
+
+// Add event
+document.getElementById("eventForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    let name = document.getElementById("eventName").value;
+    let date = document.getElementById("eventDate").value;
+    let location = document.getElementById("eventLocation").value;
+
+    let eventData = {
+        id: Date.now(),
+        name,
+        date,
+        location
+    };
+
+    events.push(eventData);
+    localStorage.setItem("events", JSON.stringify(events));
+
+    addEventToUI(eventData);
+
+    document.getElementById("eventForm").reset();
+});
+
+// Show event in UI
+function addEventToUI(event) {
+    let card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+        <h3>${event.name}</h3>
+        <p><strong>Date:</strong> ${event.date}</p>
+        <p><strong>Location:</strong> ${event.location}</p>
+    `;
+
+    // Delete button
+    let deleteBtn = document.createElement("button");
+    deleteBtn.innerText = "Delete";
+    deleteBtn.className = "delete-btn";
+
+    deleteBtn.onclick = function () {
+        card.remove();
+
+        // remove from storage
+        events = events.filter(e => e.id !== event.id);
+        localStorage.setItem("events", JSON.stringify(events));
+    };
+
+    card.appendChild(deleteBtn);
+
+    document.getElementById("eventsList").appendChild(card);
+}
+</script>
+
+</body>
+</html>

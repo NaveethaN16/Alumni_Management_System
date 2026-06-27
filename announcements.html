@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Announcements</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">Alumni Portal</div>
+
+    <ul class="nav-links">
+        <li><a href="student-dashboard.html">Student</a></li>
+        <li><a href="alumni-dashboard.html">Alumni</a></li>
+        <li><a href="event.html">Events</a></li>
+        <li><a href="announcement.html">Announcements</a></li>
+        <li><a href="request.html">Mentor Requests</a></li>
+    </ul>
+</nav>
+
+<header>
+    <h1>Announcements</h1>
+</header>
+<h2>Add Announcement</h2>
+
+<input type="text" id="announcementTitle" placeholder="Announcement Title"><br><br>
+
+<input type="text" id="announcementDetails" placeholder="Details"><br><br>
+
+<button onclick="addAnnouncement()">Add Announcement</button>
+
+<hr>
+
+
+<div id="announcementList" 
+class="stats">
+
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAwFTAI8LYiA_l-YkTzfukf4BQoCUQBLjk",
+  authDomain: "alumni-platform-7207c.firebaseapp.com",
+  databaseURL: "https://alumni-platform-7207c-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "alumni-platform-7207c",
+  storageBucket: "alumni-platform-7207c.firebasestorage.app",
+  messagingSenderId: "485659849647",
+  appId: "1:485659849647:web:5beada5c3d7e41b87af55a"
+};
+
+firebase.initializeApp(firebaseConfig);
+let announcementEditId = "";
+
+function addAnnouncement() {
+
+    let title = document.getElementById("announcementTitle").value;
+    let details = document.getElementById("announcementDetails").value;
+
+    if(announcementEditId != "") {
+
+    firebase.database().ref(
+        "announcements/" + announcementEditId
+    ).update({
+        title: title,
+        details: details
+    });
+
+    alert("Announcement Updated ✅");
+
+    announcementEditId = "";
+
+} else {
+
+    firebase.database().ref("announcements").push({
+        title: title,
+        details: details
+    });
+
+    alert("Announcement Saved ✅");
+}
+}
+
+firebase.database().ref("announcements").on("value", function(snapshot) {
+
+    let announcementList =
+        document.getElementById("announcementList");
+
+    announcementList.innerHTML = "";
+
+    snapshot.forEach(function(childSnapshot) {
+
+        let announcement = childSnapshot.val();
+
+        announcementList.innerHTML += `
+<div class="card">
+    <h3>${announcement.title}</h3>
+    <p>${announcement.details}</p>
+
+    <button onclick="editAnnouncement(
+        '${childSnapshot.key}',
+        '${announcement.title}',
+        '${announcement.details}'
+    )">
+        Edit
+    </button>
+
+    <button onclick="deleteAnnouncement('${childSnapshot.key}')">
+        Delete
+    </button>
+</div>
+`;
+    });
+});
+function editAnnouncement(id, title, details) {
+
+    document.getElementById("announcementTitle").value = title;
+    document.getElementById("announcementDetails").value = details;
+
+    announcementEditId = id;
+
+    alert("Edit Mode ✅");
+}
+function deleteAnnouncement(id) {
+
+    firebase.database().ref("announcements/" + id).remove();
+
+    alert("Announcement Deleted ✅");
+}
+</script>
+<nav>
+    <a href="login.html">Login</a> |
+    <a href="announcement.html">Announcements</a> |
+    <a href="event.html">Events</a> |
+    <a href="registered.html">Registered Alumni</a>
+</nav>
+<hr>
+
+</body>
+</html>

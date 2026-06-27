@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Alumni Dashboard</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    margin:0;
+    background:#f3f6fb;
+}
+
+/* HEADER */
+header{
+    background:#1e3a5f;
+    color:white;
+    padding:15px;
+    text-align:center;
+}
+
+/* CONTAINER */
+.container{
+    max-width:900px;
+    margin:auto;
+    padding:20px;
+}
+
+/* SECTION CARD */
+.section{
+    background:white;
+    padding:18px;
+    margin-bottom:20px;
+    border-radius:10px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* INPUT */
+input{
+    width:100%;
+    padding:10px;
+    margin:6px 0;
+    border:1px solid #ccc;
+    border-radius:5px;
+}
+
+/* BUTTONS */
+button{
+    padding:8px 12px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    margin-top:5px;
+}
+
+.approve{background:#27ae60;color:white;}
+.reject{background:#e74c3c;color:white;}
+.post{background:#3498db;color:white;}
+
+/* CARD INSIDE LIST */
+.card{
+    background:#f9fafc;
+    padding:12px;
+    border-radius:8px;
+    margin-top:10px;
+    border:1px solid #e0e0e0;
+}
+
+h3{
+    margin-top:0;
+}
+</style>
+</head>
+<link rel="stylesheet" href="style.css">
+<nav class="navbar">     <div class="logo">Alumni Portal</div>      <ul class="nav-links">         <li><a href="student-dashboard.html">Student</a></li>         <li><a href="alumni-dashboard.html">Alumni</a></li>         <li><a href="event.html">Events</a></li>         <li><a href="announcement.html">Announcements</a></li>         <li><a href="request.html">Mentor Requests</a></li>     </ul> </nav>
+
+
+<body>
+  <nav class="navbar">
+    <div class="logo">Alumni Portal</div>
+
+    <ul class="nav-links">
+        <li><a href="student-dashboard.html">Student</a></li>
+        <li><a href="alumni-dashboard.html">Alumni</a></li>
+        <li><a href="event.html">Events</a></li>
+        <li><a href="announcement.html">Announcements</a></li>
+        <li><a href="request.html">Mentor Requests</a></li>
+    </ul>
+</nav>
+
+<header>
+    <h1>Alumni Dashboard</h1>
+</header>
+
+<div class="container">
+
+<!-- PROFILE -->
+<div class="section">
+    <h3>My Profile</h3>
+
+    <input id="name" placeholder="Name">
+    <input id="company" placeholder="Company">
+    <input id="role" placeholder="Role">
+    <input id="email" placeholder="Email">
+
+    <button onclick="saveProfile()">Save Profile</button>
+</div>
+
+<!-- INTERNSHIP POST -->
+<div class="section">
+    <h3>Post Internship</h3>
+
+    <input id="title" placeholder="Internship Title">
+    <input id="details" placeholder="Internship Details">
+
+    <button class="post" onclick="postInternship()">Post</button>
+</div>
+
+<!-- MENTOR REQUESTS -->
+<div class="section">
+    <h3>Mentor Requests</h3>
+    <div id="requestList">Loading...</div>
+</div>
+
+<!-- INTERNSHIPS -->
+<div class="section">
+    <h3>Internships</h3>
+    <div id="internshipList"></div>
+</div>
+
+</div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+
+<script>
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "alumni-platform-7207c.firebaseapp.com",
+  databaseURL: "https://alumni-platform-7207c-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "alumni-platform-7207c",
+  storageBucket: "alumni-platform-7207c.appspot.com",
+  messagingSenderId: "485659849647",
+  appId: "1:485659849647:web:5beada5c3d7e41b87af55a"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+
+// PROFILE SAVE
+function saveProfile(){
+    localStorage.setItem("alumniProfile", JSON.stringify({
+        name:name.value,
+        company:company.value,
+        role:role.value,
+        email:email.value
+    }));
+}
+
+
+// MENTOR REQUESTS
+db.ref("requests").on

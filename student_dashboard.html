@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="logo">Alumni Portal</div>
+
+    <ul class="nav-links">
+        <li><a href="student-dashboard.html">Student</a></li>
+        <li><a href="alumni-dashboard.html">Alumni</a></li>
+        <li><a href="event.html">Events</a></li>
+        <li><a href="announcement.html">Announcements</a></li>
+        <li><a href="request.html">Mentor Requests</a></li>
+    </ul>
+</nav>
+
+<header>
+    <h1>Student Dashboard</h1>
+
+    <nav>
+        <ul class="menu">
+            <li><a href="student-dashboard.html" class="active">Dashboard</a></li>
+            <li><a href="event.html">Events</a></li>
+            <li><a href="announcement.html">Announcements</a></li>
+            <li><a href="mentor-register.html">Mentor</a></li>
+            <li><a href="alumni.html">Alumni</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- MAIN CONTAINER -->
+<div class="dashboard-container">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+
+        <!-- PROFILE -->
+        <section class="card section-box">
+            <h2>👤 My Profile</h2>
+
+            <form id="profileForm">
+                <input type="text" id="name" placeholder="Full Name" required>
+                <input type="text" id="department" placeholder="Department" required>
+                <input type="text" id="cgpa" placeholder="CGPA" required>
+                <input type="email" id="email" placeholder="Email ID" required>
+                <button type="submit">Save Profile</button>
+            </form>
+
+            <div id="profileDisplay"></div>
+        </section>
+
+        <!-- MENTOR REQUEST -->
+        <section class="card section-box">
+            <h2>🤝 Mentor Session</h2>
+
+            <p>Request guidance from alumni mentors</p>
+
+            <button onclick="requestMentor()">Request Mentor</button>
+
+            <p id="requestStatus"></p>
+        </section>
+
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+
+        <!-- EVENTS -->
+        <section class="card section-box">
+            <h2>📅 Events</h2>
+            <div id="eventsList"></div>
+        </section>
+
+        <!-- ANNOUNCEMENTS -->
+        <section class="card section-box">
+            <h2>📢 Announcements</h2>
+            <div id="announcementList"></div>
+        </section>
+
+        <!-- INTERNSHIPS -->
+        <section class="card section-box">
+            <h2>💼 Internships</h2>
+            <div id="internshipList"></div>
+        </section>
+
+    </div>
+
+</div>
+
+<script>
+// ================= PROFILE =================
+let profile = JSON.parse(localStorage.getItem("studentProfile")) || {};
+
+document.getElementById("profileForm").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    profile = {
+        name: document.getElementById("name").value,
+        department: document.getElementById("department").value,
+        cgpa: document.getElementById("cgpa").value,
+        email: document.getElementById("email").value
+    };
+
+    localStorage.setItem("studentProfile", JSON.stringify(profile));
+    displayProfile();
+});
+
+function displayProfile(){
+    let box = document.getElementById("profileDisplay");
+
+    if(!profile.name){
+        box.innerHTML = "<p>No profile saved yet.</p>";
+        return;
+    }
+
+    box.innerHTML = `
+        <div class="card">
+            <h3>${profile.name}</h3>
+            <p><b>Department:</b> ${profile.department}</p>
+            <p><b>CGPA:</b> ${profile.cgpa}</p>
+            <p><b>Email:</b> ${profile.email}</p>
+        </div>
+    `;
+}
+
+displayProfile();
+
+// ================= EVENTS =================
+let events = JSON.parse(localStorage.getItem("events")) || [];
+
+function loadEvents(){
+    let container = document.getElementById("eventsList");
+    container.innerHTML = "";
+
+    if(events.length === 0){
+        container.innerHTML = "<p>No events available.</p>";
+        return;
+    }
+
+    events.forEach(e => {
+        container.innerHTML += `
+            <div class="card">
+                <h3>${e.name}</h3>
+                <p>${e.date}</p>
+                <p>${e.location}</p>
+            </div>
+        `;
+    });
+}
+loadEvents();
+
+// ================= ANNOUNCEMENTS =================
+let announcements = JSON.parse(localStorage.getItem("announcements")) || [];
+
+function loadAnnouncements(){
+    let container = document.getElementById("announcementList");
+    container.innerHTML = "";
+
+    if(announcements.length === 0){
+        container.innerHTML = "<p>No announcements.</p>";
+        return;
+    }
+
+    announcements.forEach(a => {
+        container.innerHTML += `
+            <div class="card">
+                <h3>${a.title}</h3>
+                <p>${a.message}</p>
+            </div>
+        `;
+    });
+}
+loadAnnouncements();
+
+// ================= MENTOR REQUEST =================
+function requestMentor(){
+
+    if(!profile.name){
+        alert("Please save your profile first!");
+        return;
+    }
+
+    let requests = JSON.parse(localStorage.getItem("mentorRequests")) || [];
+
+    requests.push({
+        studentName: profile.name,
+        department: profile.department,
+        cgpa: profile.cgpa,
+        email: profile.email,
+        status: "Pending"
+    });
+
+    localStorage.setItem("mentorRequests", JSON.stringify(requests));
+
+    document.getElementById("requestStatus").innerText =
+        "Mentor request sent successfully!";
+}
+
+// ================= INTERNSHIPS =================
+let internships = JSON.parse(localStorage.getItem("internships")) || [
+    {
+        title: "Web Development Intern",
+        company: "Tech Company",
+        details: "Remote internship for 2 months"
+    }
+];
+
+function loadInternships(){
+    let container = document.getElementById("internshipList");
+    container.innerHTML = "";
+
+    internships.forEach(i => {
+        container.innerHTML += `
+            <div class="card">
+                <h3>${i.title}</h3>
+                <p><b>${i.company}</b></p>
+                <p>${i.details}</p>
+                <button>Apply</button>
+            </div>
+        `;
+    });
+}
+loadInternships();
+
+</script>
+
+</body>
+</html>
+``

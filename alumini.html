@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alumni Directory</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="logo">Alumni Portal</div>
+
+    <ul class="nav-links">
+        <li><a href="student-dashboard.html">Student</a></li>
+        <li><a href="alumni-dashboard.html">Alumni</a></li>
+        <li><a href="event.html">Events</a></li>
+        <li><a href="announcement.html">Announcements</a></li>
+        <li><a href="request.html">Mentor Requests</a></li>
+    </ul>
+</nav>
+
+<header>
+<h1>🎓 Alumni Directory</h1>
+</header>
+
+<nav>
+<a href="index.html">Home</a>
+<a href="announcement.html">Announcements</a>
+<a href="event.html">Events</a>
+<a href="mentorship.html">Mentorship</a>
+<a href="login.html">Login</a>
+</nav>
+
+<div class="stats">
+
+<div class="card">
+<h3 id="totalAlumni">0</h3>
+<p>Total Alumni</p>
+</div>
+
+<div class="card">
+<h3 id="totalEvents">0</h3>
+<p>Total Events</p>
+</div>
+
+</div>
+
+<div id="adminPanel">
+
+<h2>Add Alumni</h2>
+
+<input type="text" id="name" placeholder="Enter Name"><br><br>
+
+<input type="text" id="branch" placeholder="Enter Department"><br><br>
+
+<input type="text" id="year" placeholder="Enter Batch"><br><br>
+
+<input type="text" id="company" placeholder="Enter Company"><br><br>
+
+<button onclick="addAlumni()">Save Alumni</button>
+
+<button onclick="logout()">Logout</button>
+
+</div>
+
+<hr>
+
+<h2>Search Alumni</h2>
+
+<input
+type="text"
+id="searchBox"
+placeholder="Search Alumni..."
+onkeyup="searchAlumni()">
+
+<br><br>
+
+<div id="alumniList" class="stats"></div>
+
+<script>
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyAwFTAI8LYiA_l-YkTzfukf4BQoCUQBLjk",
+
+authDomain: "alumni-platform-7207c.firebaseapp.com",
+
+databaseURL: "https://alumni-platform-7207c-default-rtdb.asia-southeast1.firebasedatabase.app",
+
+projectId: "alumni-platform-7207c",
+
+storageBucket: "alumni-platform-7207c.firebasestorage.app",
+
+messagingSenderId: "485659849647",
+
+appId: "1:485659849647:web:5beada5c3d7e41b87af55a"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.database();
+
+let editId = "";
+db.ref("events").on("value", function(snapshot){
+
+document.getElementById("totalEvents").innerText =
+snapshot.numChildren();
+
+});
+
+db.ref("alumni").on("value", function(snapshot){
+
+document.getElementById("totalAlumni").innerText =
+snapshot.numChildren();
+
+let alumniList =
+document.getElementById("alumniList");
+
+alumniList.innerHTML = "";
+
+snapshot.forEach(function(childSnapshot){
+
+let alumni = childSnapshot.val();
+
+alumniList.innerHTML += `
+
+<div class="card">
+
+<h3>${alumni.name}</h3>
+
+<p><b>Department:</b> ${alumni.branch}</p>
+
+<p><b>Batch:</b> ${alumni.year}</p>
+
+<p><b>Company:</b> ${alumni.company}</p>
+
+<button onclick="editAlumni(
+'${childSnapshot.key}',
+'${alumni.name}',
+'${alumni.branch}',
+'${alumni.year}',
+'${alumni.company}'
+)">
+✏ Edit
+</button>
+
+<button onclick="deleteAlumni('${childSnapshot.key}')">
+🗑 Delete
+</button>
+
+</div>
+
+`;
+
+});
+
+});
+function addAlumni(){
+
+let name=document.getElementById("name").value;
+let branch=document.getElementById("branch").value;
+let year=document.getElementById("year").value;
+let company=document.getElementById("company").value;
+
+if(name=="" || branch=="" || year=="" || company==""){
+
+alert("Please fill all fields");
+return;
+
+}
+
+if(editId==""){
+
+db.ref("alumni").push({
+
+name:name,
+branch:branch,
+year:year,
+company:company
+
+});
+
+alert("Alumni Added Successfully ✅");
+
+}else{
+
+db.ref("alumni/"+editId).update({
+
+name:name,
+branch:branch,
+year:year,
+company:company
+
+});
+
+alert("Alumni Updated Successfully ✅");
+
+editId="";
+
+}
+
+document.getElementById("name").value="";
+document.getElementById("branch").value="";
+document.getElementById("year").value="";
+document.getElementById("company").value="";
+
+}
+
+function editAlumni(id,name,branch,year,company){
+
+document.getElementById("name").value=name;
+document.getElementById("branch").value=branch;
+document.getElementById("year").value=year;
+document.getElementById("company").value=company;
+
+editId=id;
+
+}
+
+function deleteAlumni(id){
+
+if(confirm("Delete this alumni?")){
+
+db.ref("alumni/"+id).remove();
+
+}
+
+}
+
+function searchAlumni(){
+
+let input=document.getElementById("searchBox").value.toLowerCase();
+
+let cards=document.querySelectorAll("#alumniList .card");
+
+cards.forEach(function(card){
+
+if(card.innerText.toLowerCase().includes(input)){
+
+card.style.display="block";
+
+}else{
+
+card.style.display="none";
+
+}
+
+});
+
+}
+
+function logout(){
+
+localStorage.removeItem("admin");
+
+window.location.href="login.html";
+
+}
+
+</script>
+
+</body>
+</html>
